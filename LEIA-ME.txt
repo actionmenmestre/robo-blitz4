@@ -1,0 +1,26 @@
+ROBO TIPMINER BLITZ4 DOUBLE V15 — PACOTE INICIAL PARA RENDER
+
+ARQUIVOS
+- engine_v15.py: motor analítico extraído do notebook V15 e adaptado para diretório persistente. Mantém os cálculos do motor, memórias, somas, cadeia, proteção e divisão das duas rodadas.
+- worker.py: serviço contínuo. Executa o motor a cada 30 segundos (ou POLL_SECONDS), salva o log e só considera alerta quando API está atualizada, V15 marcou SINAL FORTE/MODERADO e a proteção foi aprovada.
+- historico_acumulado.json: cópia do arquivo enviado nesta conversa (10.992 registros). O original do usuário não é alterado.
+- Dockerfile, requirements.txt, render.yaml: configuração de implantação.
+
+ESTADO REAL
+- O pacote foi compilado e o motor foi executado localmente contra a base histórica.
+- No teste local, a resolução de rede deste ambiente bloqueou o acesso à API TipMiner. O motor marcou API indisponível/dados desatualizados e não liberou sinal. Isso não prova que a API esteja fora do ar no Render.
+- Não foi possível criar o serviço no Render porque isso exige autenticação/acesso à conta do usuário. Portanto, o robô ainda NÃO está publicado nem rodando na nuvem.
+
+CONFIGURAÇÃO NO RENDER (após enviar esta pasta a um repositório Git privado)
+1. No Render, crie um Background Worker a partir do repositório e selecione Dockerfile.
+2. Anexe um Persistent Disk no caminho /var/data (2 GB; o blueprint já descreve essa configuração).
+3. Defina Environment Variables: DATA_DIR=/var/data, POLL_SECONDS=30, TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID.
+4. TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID devem ser inseridos diretamente no painel privado do Render. Nunca os publique no Git nem os envie nesta conversa.
+5. Confira os Logs. A primeira execução deve mostrar BLITZ4_RESULT e o número de rodadas. Só depois valide o primeiro alerta real.
+
+ALERTAS E SEGURANÇA
+- Nenhum alerta quando API está indisponível/desatualizada.
+- Nenhum alerta se a proteção não estiver aprovada.
+- Alertas apenas para SINAL FORTE ou SINAL MODERADO aprovados pela V15, com deduplicação de eventos.
+- A regra separada para alertas de OBSERVAÇÃO PROMISSORA ainda não foi incorporada: precisa de teste histórico específico antes de ativar, para não inventar sinais.
+- O serviço não garante resultados. A análise é estatística e experimental.
