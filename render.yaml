@@ -1,16 +1,12 @@
 services:
-  - type: worker
-    name: blitz4-v15-telegram
+  - type: web
+    name: robo-blitz4-teste-gratuito
     runtime: docker
-    plan: starter
+    plan: free
     autoDeploy: false
-    disk:
-      name: blitz4-history
-      mountPath: /var/data
-      sizeGB: 2
     envVars:
       - key: DATA_DIR
-        value: /var/data
+        value: /tmp/blitz4-data
       - key: POLL_SECONDS
         value: "30"
       - key: TELEGRAM_BOT_TOKEN

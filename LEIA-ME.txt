@@ -1,26 +1,25 @@
-ROBO TIPMINER BLITZ4 DOUBLE V15 — PACOTE INICIAL PARA RENDER
+ROBO TIPMINER BLITZ4 DOUBLE — TESTE GRATUITO RENDER WEB
+
+ATENÇÃO: esta configuração é SOMENTE para teste. O serviço Web gratuito do Render pode dormir após período sem tráfego e seu disco é efêmero. Portanto não garante execução 24h, consulta ininterrupta a cada 30 segundos nem preservação de memória após reinicializações.
 
 ARQUIVOS
-- engine_v15.py: motor analítico extraído do notebook V15 e adaptado para diretório persistente. Mantém os cálculos do motor, memórias, somas, cadeia, proteção e divisão das duas rodadas.
-- worker.py: serviço contínuo. Executa o motor a cada 30 segundos (ou POLL_SECONDS), salva o log e só considera alerta quando API está atualizada, V15 marcou SINAL FORTE/MODERADO e a proteção foi aprovada.
-- historico_acumulado.json: cópia do arquivo enviado nesta conversa (10.992 registros). O original do usuário não é alterado.
-- Dockerfile, requirements.txt, render.yaml: configuração de implantação.
+- engine_v15.py: motor analítico extraído do notebook fornecido.
+- worker.py: ciclo de análise a cada 30 segundos enquanto o processo estiver ativo; alerta apenas para SINAL FORTE/MODERADO com API atualizada e proteção aprovada.
+- web_app.py: endpoints / e /status para o Render aceitar serviço Web.
+- historico_acumulado.json: histórico inicial fornecido (10.992 registros).
+- Dockerfile / requirements.txt / render.yaml: implantação.
 
-ESTADO REAL
-- O pacote foi compilado e o motor foi executado localmente contra a base histórica.
-- No teste local, a resolução de rede deste ambiente bloqueou o acesso à API TipMiner. O motor marcou API indisponível/dados desatualizados e não liberou sinal. Isso não prova que a API esteja fora do ar no Render.
-- Não foi possível criar o serviço no Render porque isso exige autenticação/acesso à conta do usuário. Portanto, o robô ainda NÃO está publicado nem rodando na nuvem.
+CONFIGURAÇÃO
+1. No GitHub, substitua os arquivos antigos pelos arquivos desta pasta (upload dos arquivos na raiz do repositório; confirmar substituir os existentes).
+2. No Render, crie New > Web Service e escolha o repositório actionmenestre/robo-blitz4.
+3. Runtime Docker; branch main; Root Directory vazio; Instance Type Free.
+4. Environment Variables: DATA_DIR=/tmp/blitz4-data; POLL_SECONDS=30; TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID (preencher diretamente no painel Render, nunca no GitHub).
+5. Deploy. Verifique /status e os Logs.
 
-CONFIGURAÇÃO NO RENDER (após enviar esta pasta a um repositório Git privado)
-1. No Render, crie um Background Worker a partir do repositório e selecione Dockerfile.
-2. Anexe um Persistent Disk no caminho /var/data (2 GB; o blueprint já descreve essa configuração).
-3. Defina Environment Variables: DATA_DIR=/var/data, POLL_SECONDS=30, TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID.
-4. TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID devem ser inseridos diretamente no painel privado do Render. Nunca os publique no Git nem os envie nesta conversa.
-5. Confira os Logs. A primeira execução deve mostrar BLITZ4_RESULT e o número de rodadas. Só depois valide o primeiro alerta real.
+LIMITAÇÕES DO PLANO GRATUITO
+- O serviço pode dormir após 15 minutos sem requisições HTTP de entrada.
+- Sistema de arquivos é efêmero: histórico acumulado e deduplicação de alertas podem ser perdidos ao reiniciar/reimplantar.
+- Não use como robô operacional contínuo. Para operação 24h com memória persistente é necessário serviço pago com disco persistente ou outra infraestrutura apropriada.
 
-ALERTAS E SEGURANÇA
-- Nenhum alerta quando API está indisponível/desatualizada.
-- Nenhum alerta se a proteção não estiver aprovada.
-- Alertas apenas para SINAL FORTE ou SINAL MODERADO aprovados pela V15, com deduplicação de eventos.
-- A regra separada para alertas de OBSERVAÇÃO PROMISSORA ainda não foi incorporada: precisa de teste histórico específico antes de ativar, para não inventar sinais.
-- O serviço não garante resultados. A análise é estatística e experimental.
+SEGURANÇA
+Nunca publique TELEGRAM_BOT_TOKEN nem TELEGRAM_CHAT_ID no repositório. Não há garantia de resultado de apostas; sinais são estatísticos e experimentais.
